@@ -9,34 +9,29 @@
 <body>
     <div id="card-container">
         <div id="card-closed" class="screen">
-            <p id="instruction">Chạm vào ngọn nến để thổi nhé!</p>
             
             <div id="candle-flame-container">
-                <svg id="flame" class="flicker" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 32">
-                  <path d="M12 2C8.7 6.1 7 10.4 7 14.8c0 5 4 9 9 9 4.3 0 7.7-3 8.7-6.9C24.3 14.4 22 12 12 2z" fill="#ff9933" />
-                </svg>
-                
-                <svg id="smoke" class="hidden vanishing" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                  <circle cx="12" cy="12" r="10" fill="#ccc" opacity="0.8" />
-                </svg>
+                <div id="flame" class="flame"></div>
+                <div id="smoke" class="smoke hidden"></div>
             </div>
+
+            <p id="instruction">👇 Chạm vào ngọn nến để thổi nhé! 👇</p>
         </div>
 
         <div id="card-open" class="screen hidden">
             <div id="open-content">
                 <h1>CHÚC MỪNG SINH NHẬT! 🥳</h1>
-                <p>Mừng ngày sinh nhật của bạn! Mong bạn luôn vui vẻ, hạnh phúc và gặt hái được nhiều thành công.</p>
+                <p>Tuổi mới thật nhiều niềm vui, luôn xinh đẹp và rực rỡ như những bông hoa nhé!</p>
                 
                 <div class="photo-gallery">
-                    <img src="assets/images/photo1.jpg" alt="Ảnh 1">
-                    <img src="assets/images/photo2.jpg" alt="Ảnh 2">
+                    <div class="photo-placeholder">Ảnh 1</div>
+                    <div class="photo-placeholder">Ảnh 2</div>
                 </div>
+                <button id="restart-btn">Xem lại từ đầu</button>
             </div>
-            <button id="restart-btn">Trở lại</button>
         </div>
 
         <canvas id="confetti-canvas"></canvas>
-
         <audio id="birthday-song" src="assets/audio/happy_birthday.mp3" preload="auto"></audio>
     </div>
 
