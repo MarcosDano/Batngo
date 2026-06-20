@@ -17,7 +17,7 @@ body { margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, 
 #candle-flame-container { 
     position: absolute; 
     /* BẠN CẦN CHỈNH THÔNG SỐ TOP/LEFT NÀY ĐỂ KHỚP VỚI TIM NẾN TRÊN ẢNH CỦA BẠN */
-    top: 42%; 
+    top: 35%; 
     left: 50%; 
     transform: translateX(-50%); 
     width: 30px; 
