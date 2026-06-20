@@ -3,178 +3,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thiệp Chúc Mừng Sinh Nhật</title>
+    <title>Chúc Mừng Sinh Nhật!</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
     <style>
-        /* Cài đặt chung cho trang web */
-        body {
+        /* --- Phong cách cơ bản cho toàn bộ trang --- */
+        body, html {
             margin: 0;
             padding: 0;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffe0e9; /* Màu nền nhẹ nhàng bên ngoài */
+        }
+
+        /* --- Container chính để giữ thiệp --- */
+        .main-container {
+            width: 100vw;
             height: 100vh;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
-            background-color: #1a1a2e; /* Nền tối lúc chưa thổi nến */
-            transition: background-color 1.5s ease;
-            font-family: 'Arial', sans-serif;
-            overflow: hidden;
+            align-items: center;
+            /* Tạo không gian 3D cho hiệu ứng lật thiệp */
+            perspective: 2000px;
         }
 
-        /* Nền sáng sau khi đã thổi nến */
-        body.blown-out {
-            background-color: #ffe8d6;
+        /* --- Cấu trúc lật thiệp --- */
+        .card-flipper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 1s ease-in-out;
+            transform-style: preserve-3d;
+            cursor: pointer;
         }
 
-        /* --- Màn hình 1: Bánh và Nến --- */
-        #scene-1 {
+        /* Khi thiệp được lật (class 'open' được thêm bởi JS) */
+        .card-flipper.open {
+            transform: rotateY(-180deg);
+        }
+
+        /* Phong cách chung cho cả 2 mặt thiệp */
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden; /* Ẩn mặt sau khi lật */
+            background-size: cover;
+            background-position: center;
+            border-radius: 15px; /* Bo góc nhẹ */
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        /* --- MẶT TRƯỚC: Màn hình thổi nến (nền image_0.png) --- */
+        .card-front {
+            background-image: url('image_0.png');
+            z-index: 2;
+            transform: rotateY(0deg);
+        }
+
+        /* Khu vực chạm (hitbox) trên ngọn nến */
+        .candle-hitbox {
+            position: absolute;
+            /* Định vị chính xác trên ngọn lửa nến trong image_0.png */
+            top: 28.5%; 
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px; /* Kích thước vừa chạm */
+            height: 50px;
+            /* background-color: rgba(255,0,0,0.3); /* Mở comment này để thấy vị trí hitbox */
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        /* --- MẶT SAU: Nội dung thiệp mở (nền image_1.png) --- */
+        .card-back {
+            background-image: url('image_1.png');
+            transform: rotateY(180deg);
+            background-color: #fffaf0; /* Nền kem sạch */
             display: flex;
             flex-direction: column;
+            justify-content: center;
             align-items: center;
-            transition: opacity 1s ease;
-        }
-
-        .instruction {
-            color: #fff;
-            font-size: 1.2rem;
-            margin-bottom: 40px;
-            animation: pulse 1.5s infinite;
+            padding: 20px;
             text-align: center;
         }
 
-        /* Vẽ bánh kem đơn giản bằng CSS */
-        .cake {
-            width: 200px;
-            height: 80px;
-            background-color: #ff9a9e;
-            border-radius: 10px 10px 0 0;
-            position: relative;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            border-bottom: 10px solid #e27d80;
-        }
+        /* --- HIỆU ỨNG THỔI NẾN --- */
 
-        /* Vẽ Nến */
-        .candle {
-            width: 20px;
-            height: 60px;
-            background: linear-gradient(#fff, #f4e2d8);
+        /* Hiệu ứng khói (image_2.png) */
+        .smoke-puff {
             position: absolute;
-            top: -60px;
-            left: 90px;
-            border-radius: 3px;
-        }
-
-        /* Vẽ Ngọn lửa */
-        .flame {
-            width: 20px;
-            height: 30px;
-            background: #ff9d00;
-            border-radius: 50% 50% 20% 20%;
-            position: absolute;
-            top: -35px;
-            left: 0px;
-            cursor: pointer;
-            box-shadow: 0 0 20px #ff9d00, 0 0 40px #ff9d00;
-            animation: flicker 0.1s infinite alternate;
-            transition: opacity 0.4s ease;
-        }
-
-        /* --- Màn hình 2: Thiệp --- */
-        #scene-2 {
-            position: absolute;
+            top: 26%; /* Ngay trên ngọn nến */
+            left: 50%;
+            transform: translateX(-50%) scale(0);
+            width: 40px;
+            height: 40px;
+            background-image: url('image_2.png');
+            background-size: contain;
+            background-repeat: no-repeat;
             opacity: 0;
-            transform: scale(0.5) translateY(50px);
-            transition: all 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            text-align: center;
-            pointer-events: none; /* Không nhận tương tác khi đang ẩn */
+            z-index: 9;
+            transition: transform 0.5s ease-out, opacity 0.5s ease-out;
         }
 
-        /* Trạng thái hiện thiệp sau khi thổi nến */
-        body.blown-out #scene-2 {
+        /* Khi khói hiện ra (thêm class 'puffing' bởi JS) */
+        .smoke-puff.puffing {
+            transform: translateX(-50%) scale(1.2);
             opacity: 1;
-            transform: scale(1) translateY(0);
-            pointer-events: auto;
         }
 
-        .card {
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-            max-width: 320px;
-            margin: 0 20px;
+        /* Class để làm mờ nến gốc (sử dụng hiệu ứng mờ nhẹ để mô phỏng nến tắt) */
+        .candle-faded {
+            filter: blur(1.5px) opacity(0.7);
+            transition: filter 0.5s ease;
         }
-
-        .card h1 {
-            color: #e63946;
-            margin-bottom: 20px;
-            font-size: 1.8rem;
-        }
-
-        .card p {
-            color: #444;
+        
+        /* Phong cách cho văn bản lời chúc bên trong */
+        .wishes-text {
+            font-size: 1.5rem;
+            color: #d14170; /* Màu hồng đậm */
+            margin-top: 10px;
             line-height: 1.6;
-            font-size: 1.1rem;
         }
 
-        /* --- Hiệu ứng Animation --- */
-        @keyframes pulse {
-            0% { opacity: 0.7; }
-            50% { opacity: 1; text-shadow: 0 0 10px #fff; }
-            100% { opacity: 0.7; }
-        }
-
-        @keyframes flicker {
-            0% { transform: scale(1); opacity: 0.9; }
-            100% { transform: scale(1.1); opacity: 1; }
-        }
-
-        /* Ẩn màn hình 1 khi đã thổi nến */
-        body.blown-out #scene-1 {
-            opacity: 0;
-            pointer-events: none;
-        }
     </style>
 </head>
 <body>
 
-    <div id="scene-1">
-        <div class="instruction">Chạm vào ngọn lửa để thổi nến nhé! ✨</div>
-        <div class="cake">
-            <div class="candle">
-                <div class="flame" id="flame" onclick="blowOutCandle()" ontouchstart="blowOutCandle()"></div>
+    <div class="main-container">
+        <div class="card-flipper" id="cardFlipper">
+            
+            <div class="card-front" id="cardFront">
+                <div class="candle-hitbox" onclick="blowCandle()"></div>
+                <div class="smoke-puff" id="smokePuff"></div>
             </div>
-        </div>
-    </div>
 
-    <div id="scene-2">
-        <div class="card">
-            <h1>🎉 Happy Birthday! 🎂</h1>
-            <p>Chúc bạn một tuổi mới ngập tràn niềm vui, sức khỏe và luôn mỉm cười rạng rỡ nhé! Mọi điều tốt đẹp nhất sẽ đến với bạn trong hôm nay và cả những ngày sau.</p>
-            <p>💖💖💖</p>
+            <div class="card-back">
+                </div>
+
         </div>
     </div>
 
     <script>
-        function blowOutCandle() {
-            // 1. Làm mờ và tắt lửa
-            document.getElementById('flame').style.opacity = '0';
-            
-            // 2. Chờ một chút rồi chuyển cảnh (đổi màu nền, hiện thiệp)
+        // Hàm xử lý sự kiện thổi nến
+        function blowCandle() {
+            const flipper = document.getElementById('cardFlipper');
+            const smoke = document.getElementById('smokePuff');
+            const frontCard = document.getElementById('cardFront');
+
+            // 1. Kích hoạt hiệu ứng khói và làm mờ nến
+            smoke.classList.add('puffing');
+            frontCard.classList.add('candle-faded'); // Thêm class làm mờ nến gốc
+
+            // 2. Kích hoạt pháo giấy nhẹ nhàng
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+
+            // 3. Đợi một chút rồi lật thiệp
             setTimeout(() => {
-                document.body.classList.add('blown-out');
+                flipper.classList.add('open');
                 
-                // 3. Bắn pháo giấy
+                // (Tùy chọn) Ẩn khói sau khi lật để sạch sẽ
                 setTimeout(() => {
-                    confetti({
-                        particleCount: 150,
-                        spread: 80,
-                        origin: { y: 0.6 },
-                        colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff']
-                    });
-                }, 800); // Bắn pháo giấy sau khi thiệp nổi lên
-            }, 500); // Trễ 0.5 giây tạo cảm giác nến vừa tắt bóng tối bao trùm rồi mới sáng lên
+                    smoke.classList.remove('puffing');
+                }, 500);
+
+            }, 800); // 0.8 giây
         }
     </script>
+
 </body>
 </html>
